@@ -47,7 +47,7 @@ See Roadmap for future plans for these rules.
 
 ## Example
 
-- `CreateArticleFormRequest.php` file
+1. `CreateArticleFormRequest.php` file
 
 		<?php
 		
@@ -87,7 +87,7 @@ See Roadmap for future plans for these rules.
 
 
 
-- `ArticlesController.php` file
+2. `ArticlesController.php` file
 
 		<?php
 
@@ -134,7 +134,7 @@ See Roadmap for future plans for these rules.
 		        return view("create")->with("parsleyRules", $parsleyRules);
 		    }
 
-- `create.blade.php` file
+3. `create.blade.php` file
 
 	- If you are using `LaravelCollective/html` package (which I highly recommend)
 
@@ -142,7 +142,7 @@ See Roadmap for future plans for these rules.
 
 	- In case you are still not using the package
 	
-			<input name="title" class="form-control" 
+			<input name="title" class="form-control" <?php foreach ($parsleyRules["title"] as $key => $value) { echo $key . "='" . $value . "' "; } ?>>
 
 ## Roadmap
 

@@ -1,0 +1,22 @@
+{
+    "name": "ozanmuyes/paraveley",
+    "description": " Automatically generate Parsley rules depending on Laravel's FormRequest.",
+    "keywords": ["laravel 5", "parsley", "form", "request"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ozan Müyesseroğlu",
+            "email": "ozanmuyes@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "laravel/laravel": "~5.1"
+    },
+    "autoload": {
+        "psr-0": {
+            "Ozanmuyes\\Paraveley": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}

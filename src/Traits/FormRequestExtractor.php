@@ -3,59 +3,125 @@
 namespace Ozanmuyes\Paraveley\Traits;
 
 trait FormRequestExtractor {
-    protected function fromLaravelToParsley($name, $params = []) {
-        // TODO MAPPH-1 Use C-style string placeholders in map
-        $map = [
-            // MAPPH-2 "placeholdered" => ["pattern", "%d"],
-            "accepted" => ["pattern", "yes|on|1|true"],
-            // "active_url" => ["pattern", ""],
-            // "after" => ["", $params[0]],
-            "alpha" => ["pattern" => "^[A-z]+$"],
-            "alpha_dash" => ["pattern" => "^[A-z-_]+$"],
-            "alpha_num" => ["type" => "alphanum"],
-            // "array" => ["", ""],
-            // "before" => ["", $params[0]],
-            "between" => ["length", "[" . implode(",", $params) . "]"],
-            "boolean" => ["pattern", "true|false|1|0"],
-            // "confirmed" => ["", ""],
-            // "date" => ["", ""],
-            "date_format" => ["pattern", $params[0]],
-            "different" => ["pattern", "(?!" . $params[0] . ").+"],
-            "digits" => [["type", "digits"] , ["maxlength", $params[0]]],
-            "digits_between" => [["type", "digits"] , ["length", "[" . implode(",", $params) . "]"]],
-            "email" => ["type", "email"],
-            // "exists" => ["", ""],
-            // "image" => ["pattern", "jpeg, png, bmp, gif, or svg"],
-            "in" => ["pattern", implode("|", $params)],
-            "integer" => ["type", "integer"],
-            "ip" => ["pattern", "\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\b"],
-            "max" => ["maxlength", $params[0]],
-            // "mimes" => ["", $params[0] . "|" . $params[1]],
-            "min" => ["minlength", $params[0]],
-            "not_id" => ["pattern", "(?!" . implode("|", $params) . ").+"],
-            "numeric" => ["type", "integer"],
-            "regex" => ["pattern", $params[0]],
-            "required" => ["required", "true"],
-            // "required_with" => ["", implode("|", $params)],
-            // "required_with_all" => ["", implode("|", $params)],
-            // "required_without" => ["", implode("|", $params)],
-            // "required_without_all" => ["", implode("|", $params)],
-            // "same" => ["", ""],
-            "size" => ["length", "[" . implode(",", $params) . "]"],
-            "string" => ["pattern", ".+"],
-            // "timezone" => ["", ""],
-            // "unique" => ["", $params[0] . $params[1] . $params[2] . $params[3]],
-            "url" => ["type", "url"]
-        ];
+    /**
+     * Maps Laravel 5 validation rules to corresponding Parsley rules.
+     *
+     * Remarks
+     *  - If no one-to-one matching founds, mimics the rule to get
+     *    closest result (mostly via regex).
+     *  - Matching order based on mostly used Laravel 5
+     *    validation rules.
+     *
+     * @param  string $name   Laravel 5 validation rule name
+     * @param  array  $params Laravel 5 validation rule parameters
+     * @return array          Parsley data attribute name(s) and value(s) as associative array
+     */
+    protected function fromLaravelToParsley($name, $params = [])
+    {
+        switch ($name) {
+            case "required":
+                $converted = ["required", "true"];
+                break;
 
-        // TODO MAPPH-3 Process all placeholdered values with sprintf() and supplied $params
+            case "email":
+                $converted = ["type", "email"];
+                break;
 
-        // If rule name could not be found return given value back with parameters (if exists)
-        if (!isset($map[$name])) {
-            return [$name, is_array($params) ? implode(" ", $params) : $name];
+            case "alpha":
+                $converted = ["pattern" => "^[A-z]+$"];
+                break;
+
+            case "max":
+                $converted = ["maxlength", $params[0]];
+                break;
+
+            case "min":
+                $converted = ["minlength", $params[0]];
+                break;
+
+            case "between":
+                $converted = ["length", "[" . implode(",", $params) . "]"];
+                break;
+
+            case "digits":
+                $converted = [
+                    ["type", "digits"],
+                    ["maxlength", $params[0]]
+                ];
+                break;
+
+            case "digits_between":
+                $converted = [
+                    ["type", "digits"],
+                    ["length", "[" . implode(",", $params) . "]"]
+                ];
+                break;
+
+            case "ip":
+                $converted = ["pattern", "\b(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))\b"];
+                break;
+
+            case "url":
+                $converted = ["type", "url"];
+                break;
+
+            case "integer":
+                $converted = ["type", "integer"];
+                break;
+
+            case "boolean":
+                $converted = ["pattern", "true|false|1|0"];
+                break;
+
+            case "accepted":
+                $converted = ["pattern", "yes|on|1|true"];
+                break;
+
+            case "alpha_dash":
+                $converted = ["pattern" => "^[A-z-_]+$"];
+                break;
+
+            case "alpha_num":
+                $converted = ["type" => "alphanum"];
+                break;
+
+            case "date_format":
+                $converted = ["pattern", $params[0]];
+                break;
+
+            case "different":
+                $converted = ["pattern", "(?!" . $params[0] . ").+"];
+                break;
+
+            case "in":
+                $converted = ["pattern", implode("|", $params)];
+                break;
+
+            case "not_id":
+                $converted = ["pattern", "(?!" . implode("|", $params) . ").+"];
+                break;
+
+            case "numeric":
+                $converted = ["type", "integer"];
+                break;
+
+            case "regex":
+                $converted = ["pattern", $params[0]];
+                break;
+
+            case "size":
+                $converted = ["length", "[" . implode(",", $params) . "]"];
+                break;
+
+            case "string":
+                $converted = ["pattern", ".+"];
+                break;
+
+            default:
+                $converted = [$name, is_array($params) ? implode(" ", $params) : $name];
         }
 
-        return $map[$name];
+        return $converted;
     }
 
     public function parsleyRules()

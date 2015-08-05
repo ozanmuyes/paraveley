@@ -113,5 +113,7 @@ trait FormRequestExtractor {
                 }
             }
         }
+
+        return $parsleyRules;
     }
 }

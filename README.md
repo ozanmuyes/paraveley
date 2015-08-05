@@ -1,15 +1,20 @@
 # Paraveley
 Automatically generate Parsley rules depending on Laravel's FormRequest.
 
+## Requirements
+
+- Laravel 5
+- Parsley
+
 ## Installation
 
 You can install Paraveley by choosing any of the options below;
 
 - Add following line to your `composer.json` file  
-`"ozanmuyes/paraveley": "~0.1"`  
+`"ozanmuyes/paraveley": "0.1.*"`  
 and run `composer update` command on your CLI.
 
-- Run `composer require ozanmuyes/paraveley:~0.1` command on your CLI.
+- Run `composer require ozanmuyes/paraveley:0.1.*` command on your CLI.
 
 ## Usage
 
@@ -17,9 +22,32 @@ Add `Ozanmuyes\Paraveley\Traits\FormRequestExtractor;` just below `namespace` de
 
 To retrieve array of Parsley rules to pass to the view, simply call `$request->parsleyRules()` function.
 
+## Remarks
+
+Following Laravel rules are not implemented yet;
+
+- active_url
+- after
+- array
+- before
+- confirmed
+- date
+- exists
+- image
+- mimes
+- required_with
+- required\_with\_all
+- required_without
+- required\_without\_all
+- same
+- timezone
+- unique
+
+See Roadmap for future plans for these rules.
+
 ## Example
 
-- `app\Http\Requests\CreateArticleFormRequest.php` file
+- `CreateArticleFormRequest.php` file
 
 		<?php
 		
@@ -82,9 +110,44 @@ To retrieve array of Parsley rules to pass to the view, simply call `$request->p
 		    public function create()
 		    {
 		        $parsleyRules = (new CreateArticleFormRequest)->parsleyRules();
+
+				/* 
+				 * $parsleyRules is an array which carries these values depending our 
+				 * CreateArticleFormRequest class' rules() function;
+				 *
+				 * array:3 [
+				 *  "title" => array:3 [
+				 *    "data-parsley-required" => "true"
+				 *    "data-parsley-minlength" => "3"
+				 *    "data-parsley-maxlength" => "64"
+				 *  ]
+				 *  "subtitle" => array:2 [
+				 *    "data-parsley-minlength" => "3"
+				 *    "data-parsley-maxlength" => "128"
+				 *  ]
+				 *  "content" => array:1 [
+				 *    "data-parsley-required" => "true"
+				 *  ]
+				 * ]
+				 */
 		
-		        return view("articles.create")->with("parsleyRules", $parsleyRules);
+		        return view("create")->with("parsleyRules", $parsleyRules);
 		    }
+
+- `create.blade.php` file
+
+	- If you are using `LaravelCollective/html` package (which I highly recommend)
+
+			{!! Form::text("title", null, ["class" => "form-control"] + $parsleyRules["title"]) !!}
+
+	- In case you are still not using the package
+	
+			<input name="title" class="form-control" 
+
+## Roadmap
+
+- Tests will be written and done.
+- Due to some Laravel rules relies on database (i.e. `exists`, `unique`) these can NOT applicable on front-end. But other not implemented rules will be implemented soon. Please feel free to fork and create pull request.
 
 ## License
 

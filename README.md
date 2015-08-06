@@ -28,103 +28,108 @@ See **Example** section for further usage information.
 
 1. `CreateArticleFormRequest.php` file
 
-		<?php
-		
-		namespace App\Http\Requests;
-		
-		use App\Http\Requests\Request;
-		use Ozanmuyes\Paraveley\Traits\FormRequestExtractor;
+	```php
+	<?php
 	
-		class CreateArticleFormRequest extends Request
-		{
-		    use FormRequestExtractor;
-		
-		    /**
-		     * Determine if the user is authorized to make this request.
-		     *
-		     * @return bool
-		     */
-		    public function authorize()
-		    {
-		        return false;
-		    }
-		
-		    /**
-		     * Get the validation rules that apply to the request.
-		     *
-		     * @return array
-		     */
-		    public function rules()
-		    {
-		        return [
-		            "title" => "required|min:3|max:64",
-		            "subtitle" => "min:3|max:128",
-		            "content" => "required"
-		        ];
-		    }
-		}
-
+	namespace App\Http\Requests;
+	
+	use App\Http\Requests\Request;
+	use Ozanmuyes\Paraveley\Traits\FormRequestExtractor;
+	
+	class CreateArticleFormRequest extends Request
+	{
+	    use FormRequestExtractor;
+	
+	    /**
+	     * Determine if the user is authorized to make this request.
+	     *
+	     * @return bool
+	     */
+	    public function authorize()
+	    {
+	        return false;
+	    }
+	
+	    /**
+	     * Get the validation rules that apply to the request.
+	     *
+	     * @return array
+	     */
+	    public function rules()
+	    {
+	        return [
+	            "title" => "required|min:3|max:64",
+	            "subtitle" => "min:3|max:128",
+	            "content" => "required"
+	        ];
+	    }
+	}
+	```
 
 
 2. `ArticlesController.php` file
 
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use App\Article;
-use App\Http\Requests\CreateArticleFormRequest;
-
-class ArticlesController extends Controller
-{		
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        $parsleyRules = (new CreateArticleFormRequest)->parsleyRules();
-
-		/* 
-		 * $parsleyRules is an array which carries these values depending our 
-		 * CreateArticleFormRequest class' rules() function;
-		 *
-		 * array:3 [
-		 *  "title" => array:3 [
-		 *    "data-parsley-required" => "true"
-		 *    "data-parsley-minlength" => "3"
-		 *    "data-parsley-maxlength" => "64"
-		 *  ]
-		 *  "subtitle" => array:2 [
-		 *    "data-parsley-minlength" => "3"
-		 *    "data-parsley-maxlength" => "128"
-		 *  ]
-		 *  "content" => array:1 [
-		 *    "data-parsley-required" => "true"
-		 *  ]
-		 * ]
-		 */
-
-        return view("create")->with("parsleyRules", $parsleyRules);
-    }
-}
-```
+	```php
+	<?php
+	
+	namespace App\Http\Controllers;
+	
+	use Illuminate\Http\Request;
+	
+	use App\Http\Requests;
+	use App\Http\Controllers\Controller;
+	use App\Article;
+	use App\Http\Requests\CreateArticleFormRequest;
+	
+	class ArticlesController extends Controller
+	{		
+	    /**
+	     * Show the form for creating a new resource.
+	     *
+	     * @return Response
+	     */
+	    public function create()
+	    {
+	        $parsleyRules = (new CreateArticleFormRequest())->parsleyRules();
+	
+			/* 
+			 * $parsleyRules is an array which carries these values depending our 
+			 * CreateArticleFormRequest class' rules() function;
+			 *
+			 * array:3 [
+			 *  "title" => array:3 [
+			 *    "data-parsley-required" => "true"
+			 *    "data-parsley-minlength" => "3"
+			 *    "data-parsley-maxlength" => "64"
+			 *  ]
+			 *  "subtitle" => array:2 [
+			 *    "data-parsley-minlength" => "3"
+			 *    "data-parsley-maxlength" => "128"
+			 *  ]
+			 *  "content" => array:1 [
+			 *    "data-parsley-required" => "true"
+			 *  ]
+			 * ]
+			 */
+	
+	        return view("create")->with("parsleyRules", $parsleyRules);
+	    }
+	}
+	```
 
 3. `create.blade.php` file
 
 	- If you are using `LaravelCollective/html` package (which I highly recommend)
 
-			{!! Form::text("title", null, ["class" => "form-control"] + $parsleyRules["title"]) !!}
+		```php
+		{!! Form::text("title", null, ["class" => "form-control"] + $parsleyRules["title"]) !!}
+		```
 
 	- In case you are still not using the package
 	
-			<input name="title" class="form-control" <?php foreach ($parsleyRules["title"] as $key => $value) { echo $key . "='" . $value . "' "; } ?>>
+		```php
+		<input name="title" class="form-control" <?php foreach ($parsleyRules["title"] as $key => $value) { echo $key . "='" . $value . "' "; } ?>>
+		```
 
 ## Remarks
 
